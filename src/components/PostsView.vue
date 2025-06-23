@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { fetchData } from '@/composables/fetchData'
 
 const route = useRoute()
-
+const router = useRouter()
 
 interface ObjData {
     [key: string]: string | number | null;
@@ -19,6 +19,10 @@ interface DetailResponse {
     platform: '' | '微信' | '雪球' | '抖音'
 }
 
+const goToContent = (analyst: ObjData) => {
+    router.push(`/post/${analyst._id}/${platform.value}/${encodeURIComponent(route.params.analyst as string)}`)
+}
+
 onMounted(async () => {
     const response = await fetchData<DetailResponse>('/api/posts/' + encodeURIComponent(route.params.analyst as string))
     if (response) {
@@ -30,46 +34,50 @@ onMounted(async () => {
 
 <template>
     <div class="posts">
-        <div v-if="posts.length>0" class="card shadow text-bg-dark">
+        <div v-if="posts.length > 0" class="card shadow text-bg-dark">
             <div class="card-header text-bg-dark fw-bold text-center">Latest 10 Posts</div>
             <div class="card-body">
 
                 <template v-if="platform == '微信'">
-                    <div class="accordion accordion-flush" id="postsAccordion">
-                        <div class="accordion-item bg-dark text-white" v-for="(post, i) in posts" :key="i">
-                            <h2 class="accordion-header" :id="`heading-${i}`">
-                                <button class="accordion-button collapsed bg-dark text-white" type="button"
-                                    data-bs-toggle="collapse" :data-bs-target="`#collapse-${i}`" aria-expanded="false"
-                                    :aria-controls="`collapse-${i}`">
+                    <div class="row gx-4">
+                        <div class="col-lg-4 col-md-12 d-flex mt-2" v-for="(post, i) in posts" :key="i">
+                            <div class="card mb-3 flex-fill d-flex flex-column">
+                                <div class="card-header text-bg-dark fw-bold">
+                                    <img src="/src/assets/blog2.png" alt="blog Logo" class="img-fluid ms-1 mb-2"
+                                        style="max-height: 70px; ">
                                     {{ post.title }}
-                                </button>
-                            </h2>
-                            <div :id="`collapse-${i}`" class="accordion-collapse collapse"
-                                :aria-labelledby="`heading-${i}`" data-bs-parent="#postsAccordion">
-                                <div class="accordion-body text-white" v-html="post.content">
+                                </div>
+                                <div class="card-body text-bg-dark">
+                                    <p>
+                                        <span class="card-text" v-html="post.content">
+                                        </span>
+                                        <span> ...<a @click="goToContent(post)">查看更多</a></span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </template>
 
 
                 <template v-else-if="platform == '抖音'">
-                    <div class="accordion accordion-flush" id="postsAccordion">
-                        <div class="accordion-item bg-dark text-white" v-for="(post, i) in posts" :key="i">
-                            <h2 class="accordion-header" :id="`heading-${i}`">
-                                <button class="accordion-button collapsed bg-dark text-white" type="button"
-                                    data-bs-toggle="collapse" :data-bs-target="`#collapse-${i}`" aria-expanded="false"
-                                    :aria-controls="`collapse-${i}`">
-                                    {{ post.desc }}
-                                </button>
-                            </h2>
-                            <div :id="`collapse-${i}`" class="accordion-collapse collapse"
-                                :aria-labelledby="`heading-${i}`" data-bs-parent="#postsAccordion">
-                                <div class="accordion-body text-white">
-                                    <p><a v-if="post.url" :href="String(post.url)" target="_blank">前往观看视频</a></p>
-                                    <p>发布于 {{ post.create_time }}</p>
-                                    <p v-html="post.content"></p>
+
+                    <div class="row gx-4">
+
+                        <div class="col-lg-4 col-md-12 d-flex mt-2" v-for="(post, i) in posts" :key="i">
+                            <div class="card mb-2 flex-fill d-flex flex-column">
+                                <div class="card-header text-bg-dark fw-bold">
+                                    <img src="/src/assets/blog2.png" alt="blog Logo" class="img-fluid ms-1 mb-2"
+                                        style="max-height: 70px; ">
+                                        {{ post.desc }}
+                                </div>
+                                <div class="card-body text-bg-dark">
+                                    <p>
+                                        <span class="card-text" v-html="post.content">
+                                        </span>
+                                        <span>...<a @click="goToContent(post)">查看更多</a></span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -77,20 +85,21 @@ onMounted(async () => {
                 </template>
 
                 <template v-else-if="platform == '雪球'">
-                    <div class="accordion accordion-flush" id="postsAccordion">
-                        <div class="accordion-item bg-dark text-white" v-for="(post, i) in posts" :key="i">
-                            <h2 class="accordion-header" :id="`heading-${i}`">
-                                <button class="accordion-button collapsed bg-dark text-white" type="button"
-                                    data-bs-toggle="collapse" :data-bs-target="`#collapse-${i}`" aria-expanded="false"
-                                    :aria-controls="`collapse-${i}`">
-                                    {{ post.title }}
-                                </button>
-                            </h2>
-                            <div :id="`collapse-${i}`" class="accordion-collapse collapse"
-                                :aria-labelledby="`heading-${i}`" data-bs-parent="#postsAccordion">
-                                <div class="accordion-body text-white">
-                                    <p>发布于 {{ post.created_at }}</p>
-                                    <p v-html="post.text"></p>
+
+                    <div class="row gx-4">
+                        <div class="col-lg-4 col-md-12 d-flex mt-2" v-for="(post, i) in posts" :key="i">
+                            <div class="card mb-2 flex-fill d-flex flex-column">
+                                <div class="card-header text-bg-dark fw-bold">
+                                    <img src="/src/assets/blog2.png" alt="blog Logo" class="img-fluid ms-1 mb-2"
+                                        style="max-height: 70px; ">
+                                        {{ post.title }}
+                                </div>
+                                <div class="card-body text-bg-dark">
+                                    <p>
+                                        <span class="card-text" v-html="post.description">
+                                        </span>
+                                        <span><a @click="goToContent(post)"> 查看更多</a></span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -104,15 +113,31 @@ onMounted(async () => {
 
 <style scoped>
 /* Deep selector to target v-html content */
-:deep(.accordion-body img) {
+:deep(img) {
     max-width: 100%;
     height: auto;
     display: block;
     margin: 0 auto;
 }
 
-:deep(.accordion-body a) {
+:deep(a) {
     color: rgb(86, 153, 255)
+}
+
+a {
+    color: rgb(115, 171, 255) !important;
+    user-select: none;
+    cursor: pointer
+}
+
+.card {
+    background-color: black !important;
+}
+
+.card-header {
+    font-size: 1.6rem;
+    background-color: white;
+    /* border-bottom: 1px solid white; */
 }
 
 /* Accordion button when expanded */
