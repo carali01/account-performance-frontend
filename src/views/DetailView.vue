@@ -358,7 +358,7 @@ onMounted(async () => {
 }
 </style> -->
 
-<style>
+<style scoped>
 .chart {
   position: relative;
   height: 450px;

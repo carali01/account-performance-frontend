@@ -18,6 +18,11 @@ const router = createRouter({
       component: () => import('../views/DetailView.vue'),
     },
     {
+      path: '/post/:id/:platform/:analyst',
+      name: 'post conent',
+      component: () => import('../views/PostsContentView.vue'),
+    },
+    {
       path: '/pop-sector',
       name: 'pop-sector',
       component: () => import('../views/PopSector.vue'),
